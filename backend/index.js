@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const stripe = require("stripe")(process.env.PAYMENT_SECRET);
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 // Middleware
@@ -83,6 +84,13 @@ async function run() {
 
     app.post("/new-user", async (req, res) => {
       const newUser = req.body;
+      const saltRounds = 10; // Độ phức tạp của salt (mặc định là 10)
+      const hashedPassword = await bcrypt.hash(newUser.password, saltRounds);
+
+      // Thay mật khẩu gốc bằng mật khẩu đã hash
+      newUser.password = hashedPassword;
+
+      // Lưu người dùng vào database
 
       const result = await userCollection.insertOne(newUser);
       res.send(result);
@@ -162,7 +170,7 @@ async function run() {
     });
 
     // GET ALL CLASSES
-    app.get("/classes", async (req, res) => {
+    app.get("/classes", verifyJWT, async (req, res) => {
       const query = { status: "approved" };
       const result = await classesCollection.find(query).toArray();
       res.send(result);
