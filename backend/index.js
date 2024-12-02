@@ -257,13 +257,12 @@ async function run() {
     // Get cart item id for checking if a class is already in cart
     app.get("/cart-item/:id", async (req, res) => {
       const id = req.params.id;
-      const email = req.query.email; // Lấy email từ query string
-      console.log(id, email);
+      const email = req.query.email;
+      console.log(id);
 
-      const query = { classId: new ObjectId(id), email: req.params.email };
+      const query = { classId: id, email: email };
       const result = await cartCollection.findOne(query);
       res.send(result);
-      console.log(result);
     });
 
     app.get("/cart/:email", verifyJWT, async (req, res) => {
