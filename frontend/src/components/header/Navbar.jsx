@@ -3,9 +3,10 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { ThemeProvider, THEME_ID, createTheme } from "@mui/material/styles";
-import { Switch } from "@mui/material";
 import imgUser from "../../assets/home/girl.jpg";
 import { FaBars } from "react-icons/fa";
+
+import { motion } from "framer-motion";
 
 const navLinks = [
   { name: "Trang chủ", route: "/" },
@@ -88,14 +89,27 @@ const Navbar = () => {
     }
   }, [scrollPosition]);
 
-  {/*logout */}
-  const handleLogout =()=>{
+  {
+    /*logout */
   }
+  const handleLogout = () => {};
   return (
-    <nav className="">
+    <motion.nav
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className={`${
+        isHome ? navBg : "bg-white dark:bg-black backdrop-blur-2xl"
+      } ${
+        isFixed ? "static" : "fixed"
+      } top-0 transition-colors duration-500 ease-in-out w-full z-10`}
+    >
       <div className="lg:w-[95%] mx-auto sm:pl-6 lg:px-6">
         <div className="px-4 py-4 flex items-center justify-between">
-          <div>
+          <div
+            onClick={() => navigate("/")}
+            className="flex-shrink-0 cursor-pointer pl-7 md:pl-0 fle items-center"
+          >
             <h1 className="text-2xl inline-flex gap-4 items-center font-bold dark:text-white">
               Yoga - master{" "}
               <img src="./yoga-logo.png" alt="" className="w-8 h-8" />
@@ -121,6 +135,7 @@ const Navbar = () => {
                 {navLinks.map((link) => (
                   <li key={link.route}>
                     <NavLink
+                      style={{ whiteSpace: "nowrap" }}
                       to={link.route}
                       className={({ isActive, isPending }) =>
                         `font-bold ${
@@ -243,7 +258,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 

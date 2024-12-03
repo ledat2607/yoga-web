@@ -170,7 +170,7 @@ async function run() {
     });
 
     // GET ALL CLASSES
-    app.get("/classes", verifyJWT, async (req, res) => {
+    app.get("/classes", async (req, res) => {
       const query = { status: "approved" };
       const result = await classesCollection.find(query).toArray();
       res.send(result);
