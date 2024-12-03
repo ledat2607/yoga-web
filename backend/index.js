@@ -84,17 +84,14 @@ async function run() {
 
     app.post("/new-user", async (req, res) => {
       const newUser = req.body;
-      const saltRounds = 10; // Độ phức tạp của salt (mặc định là 10)
-      const hashedPassword = await bcrypt.hash(newUser.password, saltRounds);
-
-      // Thay mật khẩu gốc bằng mật khẩu đã hash
+      console.log(req.body);
+      const saltRounds = 10; 
+      const hashedPassword = await bcrypt.hash(newUser.password, 10);
       newUser.password = hashedPassword;
-
-      // Lưu người dùng vào database
-
       const result = await userCollection.insertOne(newUser);
       res.send(result);
     });
+
     app.post("/api/set-token", (req, res) => {
       const user = req.body;
       const token = jwt.sign(user, process.env.ACCESS_SECRET, {
@@ -160,7 +157,8 @@ async function run() {
       const result = await classesCollection.insertOne(newClass);
       res.send(result);
     });
-
+  
+    
     // GET ALL CLASSES ADDED BY INSTRUCTOR
     app.get("/classes/:email", async (req, res) => {
       const email = req.params.email;
@@ -390,6 +388,11 @@ async function run() {
             localField: "_id",
             foreignField: "email",
             as: "instructor",
+          },
+        },
+        {
+          $match: {
+            "instructor.role": "instructor",
           },
         },
         {

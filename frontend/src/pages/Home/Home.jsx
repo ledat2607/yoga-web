@@ -2,16 +2,18 @@ import React from "react";
 import HeroContainer from "./Hero/HeroContainer";
 import Gallary from "./Gallery/Gallary";
 import PopularClasses from "./PopularClasses/PopularClasses";
+import PopularTeacher from "./PopularTeacher/PopularTeacher";
 
 const Home = () => {
   return (
-    <secion>
+    <section>
       <HeroContainer />
       <div className="max-w-screen-xl mx-auto">
         <Gallary />
         <PopularClasses />
+        <PopularTeacher />
       </div>
-    </secion>
+    </section>
   );
 };
 
