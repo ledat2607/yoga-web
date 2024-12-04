@@ -12,7 +12,7 @@
   "dependencies": {
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
-    "@headlessui/react": "^1.7.15",
+    "@headlessui/react": "^1.7.19",
     "@mui/icons-material": "^6.1.9",
     "@mui/material": "^5.16.8",
     "@stripe/react-stripe-js": "^2.1.0",
@@ -22,7 +22,7 @@
     "aos": "^2.3.4",
     "axios": "^1.4.0",
     "create-file-list": "^1.1.0",
-    "firebase": "^9.22.1",
+    "firebase": "^9.23.0",
     "framer-motion": "^10.12.16",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",

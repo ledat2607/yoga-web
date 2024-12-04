@@ -32,7 +32,7 @@ const PopularClasses = () => {
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {classes.map((item, index) => (
-          <Card index={index} item={item} />
+          <Card key={index} item={item} />
         ))}
       </div>
     </div>

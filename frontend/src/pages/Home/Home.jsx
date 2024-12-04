@@ -5,6 +5,7 @@ import PopularClasses from "./PopularClasses/PopularClasses";
 import PopularTeacher from "./PopularTeacher/PopularTeacher";
 
 const Home = () => {
+  console.log(import.meta.env.VITE_API_KEY);
   return (
     <section>
       <HeroContainer />
