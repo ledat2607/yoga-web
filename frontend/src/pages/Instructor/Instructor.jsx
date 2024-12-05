@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import useAxiosFetch from "../../hook/useAxiosFetch";
 
-
 const Instructor = () => {
   const axiosFetch = useAxiosFetch();
   const [instructor, setInstructor] = useState([""]);
@@ -37,7 +36,10 @@ const Instructor = () => {
       </div>
       <div className="grid mb-28 md:grid-cols-2 lg:grid-cols-3 w-[95%] gap-4 mx-auto">
         {instructor?.map((instructor, i) => (
-          <div className="flex border border-blue-500 dark:text-white hover:-translate-y-2 duration-200 cursor-pointer flex-col shadow-md py-8 px-2 rounded-md">
+          <div
+            key={i}
+            className="flex border border-blue-500 dark:text-white hover:-translate-y-2 duration-200 cursor-pointer flex-col shadow-md py-8 px-2 rounded-md"
+          >
             <div className="flex flex-col gap-6 md:gap-3 items-center">
               <img
                 src={instructor?.photoUrl}

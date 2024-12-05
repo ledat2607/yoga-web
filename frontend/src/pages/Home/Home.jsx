@@ -3,9 +3,11 @@ import HeroContainer from "./Hero/HeroContainer";
 import Gallary from "./Gallery/Gallary";
 import PopularClasses from "./PopularClasses/PopularClasses";
 import PopularTeacher from "./PopularTeacher/PopularTeacher";
+import useAuth from "../../hook/useAuth";
 
 const Home = () => {
-  console.log(import.meta.env.VITE_API_KEY);
+  const { user } = useAuth();
+  console.log(user);
   return (
     <section>
       <HeroContainer />

@@ -4,14 +4,19 @@ import { Transition } from "@headlessui/react";
 import { Link } from "react-router-dom";
 import AuthProvider from "../../ultities/provider/AuthProvider";
 import useUser from "../../hook/useUser";
+import useAxiosSecure from "../../hook/useAxiosSecure";
+import { toast } from "react-toastify";
 
 const Classes = () => {
   const [classes, setClasses] = useState([]);
   const axiosFetch = useAxiosFetch();
-  const [hoveredCard, setHoveredCard] = useState(null);
   const { currentUser } = useUser();
   console.log(currentUser);
   const role = currentUser?.role;
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const axiosSecure = useAxiosSecure();
+  const [erroledClass, setErroledClass] = useState([]);
+
   useEffect(() => {
     axiosFetch
       .get("/classes")
@@ -20,6 +25,48 @@ const Classes = () => {
   }, []);
   const handleHover = (index) => {
     setHoveredCard(index);
+  };
+  const handleSelect = (id) => {
+    axiosSecure
+      .get(`/enrolled-classes/${currentUser?.email}`)
+      .then((res) => setErroledClass(res.data))
+      .catch((err) => {
+        console.log(err);
+      });
+    if (!currentUser) {
+      return toast.error("Vui lòng đăng nhập !!");
+    }
+    axiosSecure
+      .get(`/cart-item/${id}?email=${currentUser?.email}`)
+      .then((res) => {
+        if (res.data.classId === id) {
+          return toast.warning(`Đã đăng ký vào khóa học này !!!`);
+        } else if (erroledClass.find((item) => item.classes._id === id)) {
+          return toast.success(`Đã tham gia khóa học thành công`);
+        } else {
+          const data = {
+            classId: id,
+            userEmail: currentUser.email,
+            data: new Date(),
+          };
+          toast
+            .promise(axiosSecure.post("/add-to-cart", data))
+            .then((res) => console.log(res.data)),
+            {
+              pending: "Đang chọn....",
+              success: {
+                render({ data }) {
+                  return "Thành công ";
+                },
+              },
+              error: {
+                render({ data }) {
+                  return `Error:${data.message}`;
+                },
+              },
+            };
+        }
+      });
   };
   return (
     <div>
@@ -59,7 +106,22 @@ const Classes = () => {
                 leaveTo="opacity-0"
               >
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <button className="px-4 py-2 text-white disabled:bg-red-300 bg-secondary font-semibold duration-300 rounded-2xl hover:bg-rose-800 border-2 border-white">
+                  <button
+                    title={
+                      cls.role === "admin" || cls.role === "instructor"
+                        ? "Instructor/Admin can't able to select"
+                        : cls.availableSeats < 1
+                        ? "Không còn vị trí"
+                        : ""
+                    }
+                    onClick={() => handleSelect(cls._id)}
+                    className="px-4 py-2 text-white disabled:bg-red-300 bg-secondary font-semibold duration-300 rounded-2xl hover:bg-rose-800 border-2 border-white"
+                    disabled={
+                      cls.role === "admin" ||
+                      cls.role === "instructor" ||
+                      cls.availableSeats < 1
+                    }
+                  >
                     Thêm khóa học
                   </button>
                 </div>
