@@ -12,6 +12,10 @@ import { Link, useNavigate } from "react-router-dom";
 import GoogleLogin from "../../Social/GoogleLogin";
 import { AuthContext } from "../../ultities/provider/AuthProvider";
 import axios from "axios";
+import { toast } from "react-toastify";
+
+
+
 const SignUp = () => {
   const navigate = useNavigate();
   const { signUp, updateProfile, setError } = useContext(AuthContext);
@@ -20,25 +24,24 @@ const SignUp = () => {
     register,
     handleSubmit,
     watch,
-
     formState: { errors },
   } = useForm();
   const onSubmit = (data) => {
     signUp(data.email, data.password)
       .then((res) => {
-        const user = result.user;
+        const user = res.user;
         if (user) {
           return updateProfile(data.name, profilePic).then((res) => {
             const userImp = {
-              name: user?.dislayName,
-              email: user?.email,
+              name: data.name,
+              email: data.email,
               photoURL: profilePic,
               role: "user",
               gender: data.gender,
               phone: data.phone,
               address: data.address,
             };
-            if (user?.name && user?.dislayName) {
+            if (data.email && data.name) {
               return axios
                 .post(`http://localhost:4000/new-user`, userImp)
                 .then(() => {
@@ -54,7 +57,8 @@ const SignUp = () => {
         }
       })
       .catch((err) => {
-        setError(err.code);
+        toast.error("Lỗi khi đăng ký");
+        setError(err);
         throw new Error();
       });
   };
@@ -69,6 +73,7 @@ const SignUp = () => {
       reader.readAsDataURL(file);
     }
   };
+
   return (
     <div className="flex justify-center pt-40 bg-gray-100 min-h-screen dark:bg-gray-600">
       <div className="dark:bg-gray-500 shadow-lg h-full p-3 rounded-2xl bg-white shadow-blue-200 dark:shadow-white">

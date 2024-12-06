@@ -7,14 +7,15 @@ import { getAnalytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_API_KEY,
+  apiKey: "AIzaSyDbAJJd6EJwtCBMheMBgovXUnhlZW15it8",
   authDomain: "yoga-23040.firebaseapp.com",
   projectId: "yoga-23040",
   storageBucket: "yoga-23040.firebasestorage.app",
   messagingSenderId: "872651642256",
   appId: "1:872651642256:web:32e5f6cf6fefd93caa4f15",
-  measurementId: "G-81TRT36RNW",
+  measurementId: "G-81TRT36RNW"
 };
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);

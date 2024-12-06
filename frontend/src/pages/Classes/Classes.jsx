@@ -11,7 +11,6 @@ const Classes = () => {
   const [classes, setClasses] = useState([]);
   const axiosFetch = useAxiosFetch();
   const { currentUser } = useUser();
-  console.log(currentUser);
   const role = currentUser?.role;
   const [hoveredCard, setHoveredCard] = useState(null);
   const axiosSecure = useAxiosSecure();
