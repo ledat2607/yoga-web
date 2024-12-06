@@ -7,7 +7,6 @@ import useAuth from "../../hook/useAuth";
 
 const Home = () => {
   const { user } = useAuth();
-  console.log(user);
   return (
     <section>
       <HeroContainer />

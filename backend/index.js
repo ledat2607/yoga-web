@@ -84,10 +84,11 @@ async function run() {
 
     app.post("/new-user", async (req, res) => {
       const newUser = req.body;
-      console.log(req.body);
-      const saltRounds = 10; 
-      const hashedPassword = await bcrypt.hash(newUser.password, 10);
-      newUser.password = hashedPassword;
+      const saltRounds = 10;
+      if (newUser.password) {
+        const hashedPassword = await bcrypt.hash(newUser.password, saltRounds);
+        newUser.password = hashedPassword;
+      }
       const result = await userCollection.insertOne(newUser);
       res.send(result);
     });
@@ -157,8 +158,7 @@ async function run() {
       const result = await classesCollection.insertOne(newClass);
       res.send(result);
     });
-  
-    
+
     // GET ALL CLASSES ADDED BY INSTRUCTOR
     app.get("/classes/:email", async (req, res) => {
       const email = req.params.email;

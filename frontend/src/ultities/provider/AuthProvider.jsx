@@ -5,7 +5,6 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   GoogleAuthProvider,
-  onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
@@ -111,6 +110,8 @@ const AuthProvider = ({ children }) => {
     googleSignIn,
     error,
     setError,
+    loader,
+    setLoader,
   };
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

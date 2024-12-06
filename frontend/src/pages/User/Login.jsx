@@ -1,9 +1,28 @@
 import React, { useState } from "react";
 import { MdAlternateEmail, MdOutlineRemoveRedEye } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import GoogleLogin from "../../Social/GoogleLogin";
+import useAuth from "../../hook/useAuth";
 const Login = () => {
   const [showPass, setShowPass] = useState(false);
+  const location = useLocation();
+  const { login, error, setError, loader, setLoader } = useAuth();
+  const navigate = useNavigate();
+  const handleSubmit = (e) => {
+    setError("");
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const formData = Object.fromEntries(data);
+    login(formData.email, formData.password)
+      .then(() => {
+        navigate(location.state?.from || "/dashboard");
+      })
+      .catch((err) => {
+        setError(err.code);
+        setLoader(false);
+      });
+    console.log(formData);
+  };
   return (
     <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
       <h1 className="text-2xl flex justify-center gap-2 font-bold sm:text-3xl text-center dark:text-gray-300">
@@ -17,7 +36,7 @@ const Login = () => {
         mức độ phù hợp với bạn
       </p>
       <div className="mx-auto max-w-lg mb-0 mt-6 rounded-lg font-medium p-4 shadow-lg sm:p-6 lg:p-8 dark:bg-gray-600 backdrop-blur-lg dark:shadow-xl shadow-blue-400 dark:shadow-gray-100">
-        <form action="" className="space-y-4">
+        <form onSubmit={handleSubmit} action="" className="space-y-4">
           <p className="text-center text-rose-500 dark:text-white text-xl uppercase font-bold">
             Đăng nhập tài khoản của bạn
           </p>
