@@ -256,11 +256,9 @@ async function run() {
     app.get("/cart-item/:id", async (req, res) => {
       const id = req.params.id;
       const email = req.query.email;
-      console.log(id);
-
-      const query = { classId: id, email: email };
+      const query = { classId: id, userEmail: email };
       const result = await cartCollection.findOne(query);
-      res.send(result);
+      res.send(result); // Sử dụng res.json thay vì res.send
     });
 
     app.get("/cart/:email", verifyJWT, async (req, res) => {

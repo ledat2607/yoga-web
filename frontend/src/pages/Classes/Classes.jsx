@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import useAxiosFetch from "../../hook/useAxiosFetch";
 import { Transition } from "@headlessui/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthProvider from "../../ultities/provider/AuthProvider";
 import useUser from "../../hook/useUser";
 import useAxiosSecure from "../../hook/useAxiosSecure";
 import { toast } from "react-toastify";
 
 const Classes = () => {
+  const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
   const axiosFetch = useAxiosFetch();
   const { currentUser } = useUser();
@@ -32,13 +33,15 @@ const Classes = () => {
       .catch((err) => {
         console.log(err);
       });
+
     if (!currentUser) {
-      return toast.error("Vui lòng đăng nhập !!");
+      return toast.warning("Vui lòng đăng nhập !!");
     }
+
     axiosSecure
-      .get(`/cart-item/${id}?email=${currentUser?.email}`)
+      .get(`/cart-item/${id}?email=${currentUser.email}`)
       .then((res) => {
-        if (res.data.classId === id) {
+        if (res.data?.classId === id) {
           return toast.warning(`Đã đăng ký vào khóa học này !!!`);
         } else if (erroledClass.find((item) => item.classes._id === id)) {
           return toast.success(`Đã tham gia khóa học thành công`);
@@ -46,27 +49,25 @@ const Classes = () => {
           const data = {
             classId: id,
             userEmail: currentUser.email,
-            data: new Date(),
+            date: new Date(),
           };
           toast
-            .promise(axiosSecure.post("/add-to-cart", data))
-            .then((res) => console.log(res.data)),
-            {
-              pending: "Đang chọn....",
-              success: {
-                render({ data }) {
-                  return "Thành công ";
-                },
-              },
-              error: {
-                render({ data }) {
-                  return `Error:${data.message}`;
-                },
-              },
-            };
+            .promise(axiosSecure.post("/add-to-cart", data), {
+              pending: "Đang thêm khóa học vào giỏ hàng...",
+              success: "Thêm khóa học thành công!",
+              error: "Thêm khóa học thất bại!",
+            })
+            .then((res) => {
+              console.log(res.data);
+              navigate(`/class/${id}`);
+            });
         }
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
+
   return (
     <div>
       <div className="mt-20 pt-3 mb-20">

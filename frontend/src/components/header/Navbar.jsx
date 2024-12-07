@@ -5,8 +5,8 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { ThemeProvider, THEME_ID, createTheme } from "@mui/material/styles";
 import imgUser from "../../assets/home/girl.jpg";
 import { FaBars } from "react-icons/fa";
-
 import { motion } from "framer-motion";
+import useUser from "../../hook/useUser";
 
 const navLinks = [
   { name: "Trang chủ", route: "/" },
@@ -28,6 +28,7 @@ const Navbar = () => {
   const [navBg, setNavbg] = useState("bg-[#15151580]");
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser } = useUser();
   const [isLogin, setIsLogin] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHome, setIsHome] = useState(true);

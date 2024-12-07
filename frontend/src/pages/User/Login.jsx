@@ -3,6 +3,7 @@ import { MdAlternateEmail, MdOutlineRemoveRedEye } from "react-icons/md";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import GoogleLogin from "../../Social/GoogleLogin";
 import useAuth from "../../hook/useAuth";
+import { toast } from "react-toastify";
 const Login = () => {
   const [showPass, setShowPass] = useState(false);
   const location = useLocation();
@@ -15,13 +16,13 @@ const Login = () => {
     const formData = Object.fromEntries(data);
     login(formData.email, formData.password)
       .then(() => {
-        navigate(location.state?.from || "/dashboard");
+        navigate(location.state?.from || "/");
       })
       .catch((err) => {
         setError(err.code);
         setLoader(false);
       });
-    console.log(formData);
+    toast.success("Đăng nhập thành công");
   };
   return (
     <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">

@@ -14,8 +14,6 @@ import { AuthContext } from "../../ultities/provider/AuthProvider";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-
-
 const SignUp = () => {
   const navigate = useNavigate();
   const { signUp, updateProfile, setError } = useContext(AuthContext);
@@ -26,51 +24,81 @@ const SignUp = () => {
     watch,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => {
-    signUp(data.email, data.password)
-      .then((res) => {
-        const user = res.user;
-        if (user) {
-          return updateProfile(data.name, profilePic).then((res) => {
-            const userImp = {
-              name: data.name,
-              email: data.email,
-              photoURL: profilePic,
-              role: "user",
-              gender: data.gender,
-              phone: data.phone,
-              address: data.address,
-            };
-            if (data.email && data.name) {
-              return axios
-                .post(`http://localhost:4000/new-user`, userImp)
-                .then(() => {
-                  setError("");
-                  navigate("/");
-                  return "Đăng ký thành công";
-                })
-                .catch((err) => {
-                  throw new Error(err);
-                });
+  const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "yoga-website"); // Replace with your preset name
+    formData.append("cloud_name", "degfccw8e"); // Replace with your Cloudinary cloud name
+
+    try {
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/degfccw8e/image/upload`,
+        formData
+      );
+      return response.data.secure_url; // URL of the uploaded image
+    } catch (error) {
+      console.error("Error uploading image to Cloudinary:", error);
+      throw new Error("Upload failed");
+    }
+  };
+
+  const onSubmit = async (data) => {
+    try {
+      let profilePicUrl = "";
+
+      if (profilePic) {
+        // Upload image to Cloudinary
+        profilePicUrl = await uploadToCloudinary(profilePic);
+      }
+
+      // Proceed with signup
+      const userImp = {
+        name: data.name,
+        email: data.email,
+        photoURL: profilePicUrl, // Use the URL returned from Cloudinary
+        role: "user",
+        gender: data.gender,
+        phone: data.phone,
+        address: data.address,
+        password: data.password,
+      };
+      if (profilePicUrl) {
+        signUp(data.email, data.password)
+          .then((res) => {
+            const user = res.user;
+            if (user) {
+              return updateProfile(data.name, profilePicUrl).then(() => {
+                if (data.email && data.name) {
+                  return axios
+                    .post(`http://localhost:4000/new-user`, userImp)
+                    .then(() => {
+                      setError("");
+                      navigate("/");
+                      toast.success("Đăng ký thành công");
+                    })
+                    .catch((err) => {
+                      toast.error("Lỗi khi lưu thông tin người dùng");
+                      throw new Error(err);
+                    });
+                }
+              });
             }
+          })
+          .catch((err) => {
+            toast.error("Lỗi khi đăng ký");
+            setError(err);
           });
-        }
-      })
-      .catch((err) => {
-        toast.error("Lỗi khi đăng ký");
-        setError(err);
-        throw new Error();
-      });
+      }
+    } catch (error) {
+      toast.error("Lỗi upload hình ảnh");
+      console.error(error);
+    }
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePic(reader.result);
-      };
-      reader.readAsDataURL(file);
+      setProfilePic(file); // Store the raw file for Cloudinary upload
     }
   };
 
