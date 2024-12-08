@@ -73,7 +73,7 @@ const SignUp = () => {
                     .post(`http://localhost:4000/new-user`, userImp)
                     .then(() => {
                       setError("");
-                      navigate("/");
+                      navigate("/login");
                       toast.success("Đăng ký thành công");
                     })
                     .catch((err) => {

@@ -18,7 +18,7 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loader, setLoader] = useState(true);
   const [error, setError] = useState("");
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const auth = getAuth(app);
 
   //sign up user
@@ -37,10 +37,12 @@ const AuthProvider = ({ children }) => {
       setLoader(true);
       return await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
+      console.error("Login error:", error);
       setError(error.code);
       throw error;
     }
   };
+
   //logout user
   const logout = async () => {
     try {
@@ -79,24 +81,34 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubcribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-      if (user) {
-        axios
-          .post("http://localhost:4000/api/set-token", {
-            email: user.email,
-            name: user.displayName,
-          })
-          .then((data) => {
-            if (data.data.token) {
-              localStorage.setItem("token", data.data.token);
-              setLoader(false);
-            }
-          });
-      } else {
+      if (!user) {
         localStorage.removeItem("token");
         setLoader(false);
+        return;
       }
+
+      setUser(user);
+
+      const name = user.displayName || "Người dùng không tên"; // Default name
+
+      axios
+        .post("http://localhost:4000/api/set-token", {
+          email: user.email,
+          name: name,
+        })
+        .then((data) => {
+          if (data.data.token) {
+            localStorage.setItem("token", data.data.token);
+            setIsAuthenticated(true); 
+          }
+          setLoader(false);
+        })
+        .catch((error) => {
+          console.error("Error saving token:", error);
+          setLoader(false);
+        });
     });
+
     return () => unsubcribe();
   }, []);
 

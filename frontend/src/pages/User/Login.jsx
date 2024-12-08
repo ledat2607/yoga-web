@@ -16,13 +16,13 @@ const Login = () => {
     const formData = Object.fromEntries(data);
     login(formData.email, formData.password)
       .then(() => {
-        navigate(location.state?.from || "/");
+        navigate("/");
+        toast.success("Đăng nhập thành công");
       })
       .catch((err) => {
         setError(err.code);
         setLoader(false);
       });
-    toast.success("Đăng nhập thành công");
   };
   return (
     <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">

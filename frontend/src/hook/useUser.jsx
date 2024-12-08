@@ -16,8 +16,7 @@ const useUser = () => {
     refetch,
   } = useQuery({
     queryKey: ["user", user?.email],
-
-    queryFn: async () => {
+    queryFn: async () => {  
       const res = await axisoSecure.get(`/user/${user?.email}`);
       return res.data;
     },

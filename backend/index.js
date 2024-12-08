@@ -8,7 +8,13 @@ const bcrypt = require("bcrypt");
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 // Middleware
-app.use(cors());
+
+app.use(cors({
+    origin: 'http://localhost:5173', // URL frontend của bạn
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 // Routes
@@ -96,7 +102,7 @@ async function run() {
     app.post("/api/set-token", (req, res) => {
       const user = req.body;
       const token = jwt.sign(user, process.env.ACCESS_SECRET, {
-        expiresIn: "24h",
+        expiresIn: "7d",
       });
       res.send({ token });
     });
@@ -114,7 +120,7 @@ async function run() {
       res.send(user);
     });
     // GET USER BY EMAIL
-    app.get("/user/:email", verifyJWT, async (req, res) => {
+    app.get("/user/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
       const result = await userCollection.findOne(query);
@@ -451,7 +457,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/enrolled-classes/:email", verifyJWT, async (req, res) => {
+    app.get("/enrolled-classes/:email", async (req, res) => {
       const email = req.params.email;
       const query = { userEmail: email };
       const pipeline = [

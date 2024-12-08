@@ -7,7 +7,8 @@ import imgUser from "../../assets/home/girl.jpg";
 import { FaBars } from "react-icons/fa";
 import { motion } from "framer-motion";
 import useUser from "../../hook/useUser";
-
+import Swal from "sweetalert2";
+import useAuth from "../../hook/useAuth";
 const navLinks = [
   { name: "Trang chủ", route: "/" },
   { name: "Giảng viên", route: "/instructor" },
@@ -29,14 +30,14 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser } = useUser();
+  console.log(currentUser);
   const [isLogin, setIsLogin] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHome, setIsHome] = useState(true);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isFixed, setIsFixed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [user, setUser] = useState(true);
-
+  const { loader, logout } = useAuth();
   //toggle menu
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -93,7 +94,27 @@ const Navbar = () => {
   {
     /*logout */
   }
-  const handleLogout = () => {};
+  const handleLogout = () => {
+    logout();
+    Swal.fire({
+      title: "Bạn có chắc chắn đăng xuất",
+      text: "Bạn sẽ không thể hoàn tất nếu xác nhận !!!",
+      icon: "warning",
+      showCancelButon: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Vâng, tôi muốn đang xuất",
+    }).then((res) => {
+      if (res.isConfirmed) {
+        Swal.fire({
+          title: "Đã đăng xuất",
+          text: "Bạn đã đăng xuất thành công, nếu muốn tiếp tục hãy đăng nhập lại",
+          icon: "success",
+        });
+      }
+    });
+    navigate("/");
+  };
   return (
     <motion.nav
       initial={{ opacity: 0 }}
@@ -155,7 +176,7 @@ const Navbar = () => {
                   </li>
                 ))}
                 {/*User */}
-                {user ? null : isLogin ? (
+                {currentUser ? null : isLogin ? (
                   <li>
                     {" "}
                     <NavLink
@@ -196,7 +217,7 @@ const Navbar = () => {
                     </NavLink>
                   </li>
                 )}
-                {user && (
+                {currentUser && (
                   <li>
                     <NavLink
                       to={"/dashboard"}
@@ -218,10 +239,10 @@ const Navbar = () => {
                 )}
 
                 {/*Img user */}
-                {user && (
+                {currentUser && (
                   <li>
                     <img
-                      src={user.img || imgUser}
+                      src={currentUser.photoURL || imgUser}
                       alt=""
                       className="w-6 h-6 rounded-full cursor-pointer hover:scale-110 transition-all duration-300"
                     />
@@ -229,17 +250,16 @@ const Navbar = () => {
                 )}
 
                 {/*Logout button */}
-                {user && (
+                {currentUser && (
                   <li>
-                    <NavLink
-                      to={"/logout"}
-                      onClick={handleLogout}
+                    <button
+                      onClick={() => handleLogout()}
                       className={
                         "font-bold px-2 py-2 bg-secondary text-white rounded-2xl shadow-xl"
                       }
                     >
-                      Logout
-                    </NavLink>
+                      Đăng xuất
+                    </button>
                   </li>
                 )}
 

@@ -1,24 +1,33 @@
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../ultities/provider/AuthProvider";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios, { InternalAxiosRequestConfig } from "axios";
+
 const useAxiosSecure = () => {
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
-  const axisoSecure = axios.create({
+
+  const axiosSecure = axios.create({
     baseURL: "http://localhost:4000",
   });
+
   useEffect(() => {
-    const requestIntercreptor = axisoSecure.interceptors.request.use(
-      (config) => {
+    const requestInterceptor = axiosSecure.interceptors.request.use(
+      async (config: InternalAxiosRequestConfig) => {
+        config.headers = config.headers || {};
+
         const token = localStorage.getItem("token");
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
+          config.headers["Content-Type"] = "application/json";
         }
+
         return config;
-      }
+      },
+      (error) => Promise.reject(error)
     );
-    const responseInterceptor = axisoSecure.interceptors.response.use(
+
+    const responseInterceptor = axiosSecure.interceptors.response.use(
       (response) => response,
       async (error) => {
         if (
@@ -27,17 +36,18 @@ const useAxiosSecure = () => {
         ) {
           await logout();
           navigate("/login");
-          throw error;
         }
-        throw error;
+        return Promise.reject(error);
       }
     );
+
     return () => {
-      axisoSecure.interceptors.request.eject(requestIntercreptor);
-      axisoSecure.interceptors.response.eject(responseInterceptor);
+      axiosSecure.interceptors.request.eject(requestInterceptor);
+      axiosSecure.interceptors.response.eject(responseInterceptor);
     };
-  }, [logout, navigate, axisoSecure]);
-  return axisoSecure;
+  }, [logout, navigate]);
+
+  return axiosSecure;
 };
 
 export default useAxiosSecure;
