@@ -9,27 +9,31 @@ const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 // Middleware
 
-app.use(cors({
-    origin: 'http://localhost:5173', // URL frontend của bạn
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173", // URL frontend của bạn
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use(express.json());
 
 // Routes
 // SET TOKEN .
 const verifyJWT = (req, res, next) => {
-  const authorization = req.headers.authorization;
+  const authorization = req.headers["authorization"];
   if (!authorization) {
-    return res.status(401).send({ error: true, message: "Unauthorize access" });
+    return res
+      .status(401)
+      .send({ error: true, message: "Unauthorized access" });
   }
-  const token = authorization?.split(" ")[1];
+  const token = authorization.split(" ")[1];
   jwt.verify(token, process.env.ACCESS_SECRET, (err, decoded) => {
     if (err) {
       return res
         .status(403)
-        .send({ error: true, message: "forbidden user or token has expired" });
+        .send({ error: true, message: "Forbidden user or token has expired" });
     }
     req.decoded = decoded;
     next();
@@ -267,9 +271,9 @@ async function run() {
       res.send(result); // Sử dụng res.json thay vì res.send
     });
 
-    app.get("/cart/:email", verifyJWT, async (req, res) => {
+    app.get("/cart/:email", async (req, res) => {
       const email = req.params.email;
-      const query = { userMail: email };
+      const query = { userEmail: email };
       const projection = { classId: 1 };
       const carts = await cartCollection
         .find(query, { projection: projection })
@@ -281,7 +285,7 @@ async function run() {
     });
 
     // Delete a item form cart
-    app.delete("/delete-cart-item/:id", verifyJWT, async (req, res) => {
+    app.delete("/delete-cart-item/:id", async (req, res) => {
       const id = req.params.id;
       const query = { classId: id };
       const result = await cartCollection.deleteOne(query);

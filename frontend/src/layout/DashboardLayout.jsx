@@ -92,7 +92,7 @@ const student = [
   {
     to: "/dashboard/apply-instructor",
     icon: <IoMdDoneAll className="text-2xl" />,
-    title: "Trở thành huấn luyện viên",
+    title: "Trở thành chuyên gia",
   },
 ];
 const lastMenuItems = [
@@ -126,7 +126,7 @@ const DashboardLayout = () => {
       title: "Bạn có chắc chắn đăng xuất",
       text: "Bạn sẽ không thể hoàn tất nếu xác nhận !!!",
       icon: "warning",
-      showCancelButon: true,
+      showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Vâng, tôi muốn đang xuất",
@@ -145,7 +145,7 @@ const DashboardLayout = () => {
     <div className="flex">
       <div
         className={`${
-          open ? "w-72 overflow-hidden" : "w-[90px] overflow-auto "
+          open ? "w-80 overflow-hidden" : "w-[80px] overflow-auto "
         } bg-purple-200 min-h-screen p-5 md:block hidden pt-8 relative duration-300`}
       >
         <div className="flex gap-x-4 items-center">
@@ -236,7 +236,7 @@ const DashboardLayout = () => {
           Đăng xuất
         </button>
       </div>
-      <div>
+      <div className="w-full">
         <Scroll />
         <Outlet />
       </div>

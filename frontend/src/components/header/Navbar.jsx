@@ -100,7 +100,7 @@ const Navbar = () => {
       title: "Bạn có chắc chắn đăng xuất",
       text: "Bạn sẽ không thể hoàn tất nếu xác nhận !!!",
       icon: "warning",
-      showCancelButon: true,
+      showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Vâng, tôi muốn đang xuất",

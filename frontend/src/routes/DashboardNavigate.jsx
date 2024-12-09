@@ -1,6 +1,7 @@
 import React from "react";
 import useUser from "../hook/useUser";
 import { Navigate } from "react-router-dom";
+import { HashLoader } from "react-spinners";
 
 const DashboardNavigate = () => {
   const { currentUser, isLoading } = useUser();
@@ -16,8 +17,7 @@ const DashboardNavigate = () => {
     return <Navigate to={"/dashboard/admin-home"} replace />;
   if (role === "instructor")
     return <Navigate to={"/dashboard/instructor-cp"} replace />;
-  if (role === "user")
-    return <Navigate to={"/dashboard/student-cp"} replace />;
+  if (role === "user") return <Navigate to={"/dashboard/student-cp"} replace />;
 };
 
 export default DashboardNavigate;
