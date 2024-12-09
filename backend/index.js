@@ -292,7 +292,7 @@ async function run() {
       res.send(result);
     });
     // PAYMENT ROUTES
-    app.post("/create-payment-intent", verifyJWT, async (req, res) => {
+    app.post("/create-payment-intent", async (req, res) => {
       const { price } = req.body;
       const amount = parseInt(price) * 100;
       const paymentIntent = await stripe.paymentIntents.create({
@@ -305,53 +305,67 @@ async function run() {
       });
     });
     // POST PAYMENT INFO
-    app.post("/payment-info", verifyJWT, async (req, res) => {
-      const paymentInfo = req.body;
-      const classesId = paymentInfo.classesId;
-      const userEmail = paymentInfo.userEmail;
-      const singleClassId = req.query.classId;
-      let query;
-      // const query = { classId: { $in: classesId } };
-      if (singleClassId) {
-        query = { classId: singleClassId, userMail: userEmail };
-      } else {
-        query = { classId: { $in: classesId } };
+    app.post("/payment-info", async (req, res) => {
+      try {
+        const paymentInfo = req.body;
+        const { classesId, userEmail, transactionId } = paymentInfo;
+        const singleClassId = req.query.classId;
+
+        // Tạo query cho classes
+        const classesQuery = singleClassId
+          ? { _id: new ObjectId(singleClassId) }
+          : { _id: { $in: classesId.map((id) => new ObjectId(id)) } };
+
+        // Lấy danh sách lớp học
+        const classes = await classesCollection.find(classesQuery).toArray();
+
+        if (!classes || classes.length === 0) {
+          return res.status(404).send({ error: "Classes not found." });
+        }
+
+        // Duyệt từng lớp để cập nhật riêng lẻ
+        for (const singleClass of classes) {
+          const updatedDoc = {
+            $set: {
+              totalEnrolled: (singleClass.totalEnrolled || 0) + 1,
+              availableSeats: (singleClass.availableSeats || 0) - 1,
+            },
+          };
+
+          await classesCollection.updateOne(
+            { _id: singleClass._id },
+            updatedDoc
+          );
+        }
+
+        // Thêm dữ liệu mới vào enrolledCollection
+        const enrolledData = {
+          userEmail,
+          classesId: classesId.map((id) => new ObjectId(id)),
+          transactionId,
+        };
+        const enrolledResult = await enrolledCollection.insertOne(enrolledData);
+
+        // Xóa giỏ hàng dựa trên query
+        const cartQuery = singleClassId
+          ? { classId: singleClassId, email: userEmail }
+          : { classId: { $in: classesId } };
+        const deletedResult = await cartCollection.deleteMany(cartQuery);
+
+        // Thêm dữ liệu thanh toán
+        const paymentResult = await paymentCollection.insertOne(paymentInfo);
+
+        // Trả về kết quả
+        res.send({
+          success: true,
+          paymentResult,
+          deletedResult,
+          enrolledResult,
+        });
+      } catch (error) {
+        console.error("Error in /payment-info:", error);
+        res.status(500).send({ error: "Internal server error" });
       }
-      const classesQuery = {
-        _id: { $in: classesId.map((id) => new ObjectId(id)) },
-      };
-      const classes = await classesCollection.find(classesQuery).toArray();
-      const newEnrolledData = {
-        userEmail: userEmail,
-        classesId: classesId.map((id) => new ObjectId(id)),
-        transactionId: paymentInfo.transactionId,
-      };
-      const updatedDoc = {
-        $set: {
-          totalEnrolled:
-            classes.reduce(
-              (total, current) => total + current.totalEnrolled,
-              0
-            ) + 1 || 0,
-          availableSeats:
-            classes.reduce(
-              (total, current) => total + current.availableSeats,
-              0
-            ) - 1 || 0,
-        },
-      };
-      // const updatedInstructor = await userCollection.find()
-      const updatedResult = await classesCollection.updateMany(
-        classesQuery,
-        updatedDoc,
-        { upsert: true }
-      );
-      const enrolledResult = await enrolledCollection.insertOne(
-        newEnrolledData
-      );
-      const deletedResult = await cartCollection.deleteMany(query);
-      const paymentResult = await paymentCollection.insertOne(paymentInfo);
-      res.send({ paymentResult, deletedResult, enrolledResult, updatedResult });
     });
 
     app.get("/payment-history/:email", async (req, res) => {

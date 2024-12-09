@@ -13,7 +13,8 @@ import StudentDashboard from "../pages/Dashboard/student/StudentDashboard";
 import ErrolledClasses from "../pages/Dashboard/student/ErrolledClasses";
 import SelectedClass from "../pages/Dashboard/student/SelectedClass";
 import ApplyInstructor from "../pages/Dashboard/student/ApplyInstructor";
-import PaymentInfo from "../pages/Dashboard/student/PaymentInfo";
+import Payment from "../pages/Dashboard/student/Payment/Payment";
+import PaymentHistory from "../pages/Dashboard/student/Payment/PaymentHistory";
 
 export const router = createBrowserRouter([
   {
@@ -57,8 +58,9 @@ export const router = createBrowserRouter([
       { path: "/dashboard/student-cp", element: <StudentDashboard /> },
       { path: "/dashboard/my-errol", element: <ErrolledClasses /> },
       { path: "/dashboard/my-selected", element: <SelectedClass /> },
-      { path: "/dashboard/my-payment", element: <PaymentInfo /> },
+      { path: "/dashboard/my-payment", element: <PaymentHistory /> },
       { path: "/dashboard/apply-instructor", element: <ApplyInstructor /> },
+      { path: "/dashboard/user/payment", element: <Payment /> },
     ],
   },
 ]);

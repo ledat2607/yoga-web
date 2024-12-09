@@ -72,14 +72,22 @@ const SelectedClass = () => {
       }
     });
   };
+  const totalPrice = classes.reduce(
+    (acc, item) => acc + parseInt(item.price),
+    0
+  );
+  const fax = totalPrice * 0.01;
+  const price = totalPrice + fax;
+
   const handlePay = (id) => {
     const item = classes.find((item) => item._id === id);
-    console.log(item);
-    const price = item.price;
+    const priceItem = item.price;
     naviagte("/dashboard/user/payment", {
-      state: { price: price, itemId: id },
+      state: { price: priceItem, itemId: id },
     });
   };
+
+  
   return (
     <div>
       <div className="my-6 text-center">
@@ -173,20 +181,28 @@ const SelectedClass = () => {
                   Tổng tiền
                   <div className="flex justify-between mb-2 text-sm">
                     <span>Tổng số tiền</span>
-                    <span>$ 100</span>
+                    <span>$ {totalPrice}</span>
                   </div>
                   <div className="flex justify-between mb-2 text-sm">
                     <span>Phí phát sinh</span>
-                    <span>$ 5</span>
+                    <span>$ {fax}</span>
                   </div>
                   <hr className="my-2" />
                   <div className="flex justify-between mb-2 text-sm">
                     <span>Tổng số tiền</span>
-                    <span>$ 105</span>
+                    <span>$ {price}</span>
                   </div>
                 </div>
                 <div className="w-full flex justify-center">
-                  <button className="text-white bg-secondary px-2 py-1 rounded-2xl">
+                  <button
+                    disabled={price < 0}
+                    onClick={() =>
+                      naviagte("/dashboard/user/payment", {
+                        state: { price: price, itemId: null },
+                      })
+                    }
+                    className="text-white bg-secondary px-2 py-1 rounded-2xl"
+                  >
                     Thanh toán
                   </button>
                 </div>
