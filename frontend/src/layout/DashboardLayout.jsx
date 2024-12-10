@@ -56,16 +56,6 @@ const instructorNavlinks = [
     icon: <IoSchoolSharp className="text-2xl" />,
     title: "Khóa học của tôi",
   },
-  {
-    to: "/dashboard/my-pending",
-    icon: <MdPendingActions className="text-2xl" />,
-    title: "Đang chờ duyệt",
-  },
-  {
-    to: "/dashboard/my-approve",
-    icon: <IoMdDoneAll className="text-2xl" />,
-    title: "Đã duyệt",
-  },
 ];
 
 const student = [

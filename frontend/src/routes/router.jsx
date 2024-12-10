@@ -5,7 +5,6 @@ import Classes from "../pages/Classes/Classes";
 import Home from "../pages/Home/Home";
 import Login from "../pages/User/Login";
 import SignUp from "../pages/User/SignUp";
-import Dashboard from "../pages/Dashboard/Dashboard";
 import SignleClass from "../pages/Classes/SignleClass";
 import DashboardLayout from "../layout/DashboardLayout";
 import MangeUser from "../pages/Admin/MangeUser";
@@ -15,8 +14,10 @@ import SelectedClass from "../pages/Dashboard/student/SelectedClass";
 import ApplyInstructor from "../pages/Dashboard/student/ApplyInstructor";
 import Payment from "../pages/Dashboard/student/Payment/Payment";
 import PaymentHistory from "../pages/Dashboard/student/Payment/PaymentHistory";
-import InstructorHome from "../pages/Dashboard/student/instructor/InstructorHome";
-import AddClass from "../pages/Dashboard/student/instructor/AddClass";
+import InstructorHome from "../pages/Dashboard/instructor/InstructorHome";
+import AddClass from "../pages/Dashboard/instructor/AddClass";
+import InstructorClassese from "../pages/Dashboard/instructor/InstructorClassese";
+import AdminHome from "../pages/Admin/AdminHome";
 
 export const router = createBrowserRouter([
   {
@@ -53,7 +54,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/dashboard/admin-home",
-        element: <Dashboard />,
+        element: <AdminHome />,
         index: true,
       },
       //admin
@@ -70,6 +71,7 @@ export const router = createBrowserRouter([
       //instructor
       { path: "/dashboard/instructor-cp", element: <InstructorHome /> },
       { path: "/dashboard/add-class", element: <AddClass /> },
+      { path: "/dashboard/my-classese", element: <InstructorClassese /> },
     ],
   },
 ]);

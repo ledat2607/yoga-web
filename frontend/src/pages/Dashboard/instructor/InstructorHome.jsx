@@ -1,6 +1,6 @@
 import React from "react";
 
-import instructorImg from "../../../../assets/dashboard/jaconda-14.png";
+import instructorImg from "../../../assets/dashboard/jaconda-14.png";
 
 const InstructorHome = () => {
   return (
