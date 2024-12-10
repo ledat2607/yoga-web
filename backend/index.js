@@ -163,7 +163,6 @@ async function run() {
     // ! CLASSES ROUTES
     app.post("/new-class", async (req, res) => {
       const newClass = req.body;
-      console.log(newClass);
       newClass.availableSeats = parseInt(newClass.availableSeats);
       const result = await classesCollection.insertOne(newClass);
       res.send(result);

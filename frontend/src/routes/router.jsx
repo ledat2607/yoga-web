@@ -15,6 +15,8 @@ import SelectedClass from "../pages/Dashboard/student/SelectedClass";
 import ApplyInstructor from "../pages/Dashboard/student/ApplyInstructor";
 import Payment from "../pages/Dashboard/student/Payment/Payment";
 import PaymentHistory from "../pages/Dashboard/student/Payment/PaymentHistory";
+import InstructorHome from "../pages/Dashboard/student/instructor/InstructorHome";
+import AddClass from "../pages/Dashboard/student/instructor/AddClass";
 
 export const router = createBrowserRouter([
   {
@@ -54,13 +56,20 @@ export const router = createBrowserRouter([
         element: <Dashboard />,
         index: true,
       },
+      //admin
       { path: "/dashboard/manage-user", element: <MangeUser /> },
+
+      //user
       { path: "/dashboard/student-cp", element: <StudentDashboard /> },
       { path: "/dashboard/my-errol", element: <ErrolledClasses /> },
       { path: "/dashboard/my-selected", element: <SelectedClass /> },
       { path: "/dashboard/my-payment", element: <PaymentHistory /> },
       { path: "/dashboard/apply-instructor", element: <ApplyInstructor /> },
       { path: "/dashboard/user/payment", element: <Payment /> },
+
+      //instructor
+      { path: "/dashboard/instructor-cp", element: <InstructorHome /> },
+      { path: "/dashboard/add-class", element: <AddClass /> },
     ],
   },
 ]);
