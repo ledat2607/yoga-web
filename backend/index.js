@@ -439,7 +439,7 @@ async function run() {
     });
 
     // Admins stats
-    app.get("/admin-stats", verifyJWT, verifyAdmin, async (req, res) => {
+    app.get("/admin-stats", async (req, res) => {
       // Get approved classes and pending classes and instructors
       const approvedClasses = (
         await classesCollection.find({ status: "approved" }).toArray()
