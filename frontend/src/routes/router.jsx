@@ -18,6 +18,9 @@ import InstructorHome from "../pages/Dashboard/instructor/InstructorHome";
 import AddClass from "../pages/Dashboard/instructor/AddClass";
 import InstructorClassese from "../pages/Dashboard/instructor/InstructorClassese";
 import AdminHome from "../pages/Admin/AdminHome";
+import MangeClases from "../pages/Admin/MangeClases";
+import UpdateUser from "../pages/Admin/UpdateUser";
+import ManageApplication from "../pages/Admin/ManageApplication";
 
 export const router = createBrowserRouter([
   {
@@ -59,6 +62,14 @@ export const router = createBrowserRouter([
       },
       //admin
       { path: "/dashboard/manage-user", element: <MangeUser /> },
+      { path: "/dashboard/manage-class", element: <MangeClases /> },
+      {
+        path: "/dashboard/edit-user/:id",
+        element: <UpdateUser />,
+        loader: ({ params }) =>
+          fetch(`http://localhost:4000/users/${params.id}`),
+      },
+      { path: "/dashboard/manage-application", element: <ManageApplication /> },
 
       //user
       { path: "/dashboard/student-cp", element: <StudentDashboard /> },
@@ -71,7 +82,7 @@ export const router = createBrowserRouter([
       //instructor
       { path: "/dashboard/instructor-cp", element: <InstructorHome /> },
       { path: "/dashboard/add-class", element: <AddClass /> },
-      { path: "/dashboard/my-classese", element: <InstructorClassese /> },
+      { path: "/dashboard/my-classes", element: <InstructorClassese /> },
     ],
   },
 ]);

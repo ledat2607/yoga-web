@@ -36,7 +36,7 @@ const adminNavItems = [
   {
     to: "/dashboard/manage-application",
     icon: <TbBrandAppleArcade className="text-2xl" />,
-    title: "Quản lý ứng dụng",
+    title: "Quản lý ứng tuyển",
   },
 ];
 
@@ -52,7 +52,7 @@ const instructorNavlinks = [
     title: "Thêm mới khóa học",
   },
   {
-    to: "/dashboard/my-classese",
+    to: "/dashboard/my-classes",
     icon: <IoSchoolSharp className="text-2xl" />,
     title: "Khóa học của tôi",
   },

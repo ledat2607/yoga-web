@@ -132,23 +132,24 @@ async function run() {
     });
     // Delete a user
 
-    app.delete("/delete-user/:id", verifyJWT, verifyAdmin, async (req, res) => {
+    app.delete("/delete-user/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await userCollection.deleteOne(query);
       res.send(result);
     });
     // UPDATE USER
-    app.put("/update-user/:id", verifyJWT, verifyAdmin, async (req, res) => {
+    app.put("/update-user/:id", async (req, res) => {
       const id = req.params.id;
       const updatedUser = req.body;
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
+
       const updateDoc = {
         $set: {
           name: updatedUser.name,
           email: updatedUser.email,
-          role: updatedUser.option,
+          role: updatedUser.role, // Corrected field
           address: updatedUser.address,
           phone: updatedUser.phone,
           about: updatedUser.about,
@@ -156,8 +157,28 @@ async function run() {
           skills: updatedUser.skills ? updatedUser.skills : null,
         },
       };
-      const result = await userCollection.updateOne(filter, updateDoc, options);
-      res.send(result);
+
+      try {
+        const result = await userCollection.updateOne(
+          filter,
+          updateDoc,
+          options
+        );
+        if (result.modifiedCount > 0) {
+          res
+            .status(200)
+            .send({ message: "User information updated successfully!" });
+        } else {
+          res
+            .status(400)
+            .send({ message: "Failed to update user information." });
+        }
+      } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).send({
+          message: "An error occurred while updating user information.",
+        });
+      }
     });
 
     // ! CLASSES ROUTES
@@ -521,11 +542,54 @@ async function run() {
       const result = await appliedCollection.insertOne(data);
       res.send(result);
     });
+    app.get("/application", async (req, res) => {
+      const result = await appliedCollection.find().toArray();
+      res.send(result);
+    });
     app.get("/applied-instructors/:email", async (req, res) => {
       const email = req.params.email;
       const result = await appliedCollection.findOne({ email });
       res.send(result);
     });
+    app.put("/update-by-application", async (req, res) => {
+      try {
+        const { email, skill } = req.body;
+
+        if (!email || !skill) {
+          return res
+            .status(400)
+            .send({ message: "Email and skill are required" });
+        }
+
+        // Fetch the user based on the provided email
+        const user = await userCollection.findOne({ email });
+
+        if (!user) {
+          return res.status(404).send({ message: "User not found" });
+        }
+
+        // Update the user's role and add the skill
+        const result = await userCollection.updateOne(
+          { email },
+          {
+            $set: {
+              role: "instructor",
+              skill: skill,
+            },
+          }
+        );
+
+        if (result.modifiedCount > 0) {
+          res.send({ message: "User updated successfully" });
+        } else {
+          res.status(500).send({ message: "Failed to update user" });
+        }
+      } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).send({ message: "Internal server error" });
+      }
+    });
+
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     console.log(

@@ -242,7 +242,7 @@ const Navbar = () => {
                 {currentUser && (
                   <li>
                     <img
-                      src={currentUser.photoURL || imgUser}
+                      src={currentUser.photoUrl || imgUser}
                       alt=""
                       className="w-6 h-6 rounded-full cursor-pointer hover:scale-110 transition-all duration-300"
                     />

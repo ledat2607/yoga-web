@@ -8,10 +8,13 @@ const Card = ({ index, item }) => {
         <img
           src={image}
           alt=""
-          className="cursor-pointer hover:scale-105 duration-300 transition-all"
+          className="cursor-pointer hover:scale-105 duration-300 transition-all h-[200px]"
         />
         <div className="p-4">
-          <h2 className="text-xl font-semibold mb-2 dark:text-white text-secondary tracking-tight">
+          <h2
+            className="text-xl font-semibold mb-2 dark:text-white text-secondary tracking-tight overflow-hidden whitespace-nowrap text-ellipsis"
+            title={name} // Tooltip to show the full name on hover
+          >
             {name}
           </h2>
           <p className="text-[14px] text-black dark:text-white">

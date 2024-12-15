@@ -55,7 +55,7 @@ const SignUp = () => {
       const userImp = {
         name: data.name,
         email: data.email,
-        photoURL: profilePicUrl, // Use the URL returned from Cloudinary
+        photoUrl: profilePicUrl, // Use the URL returned from Cloudinary
         role: "user",
         gender: data.gender,
         phone: data.phone,

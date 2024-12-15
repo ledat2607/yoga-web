@@ -2,32 +2,71 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import useAxiosFetch from '../../hook/useAxiosFetch';
 import useAxiosSecure from '../../hook/useAxiosSecure';
-import { toast } from 'react-toastify';
-
-const MangeUser = () => {
+import { toast } from "react-toastify";
+const MangeClases = () => {
   const navigate = useNavigate();
-  const axiosSecure = useAxiosSecure();
   const axiosFetch = useAxiosFetch();
-  const [users, setUsers] = useState([]);
+  const axiosSecure = useAxiosSecure();
+  const [classes, setClasses] = useState([]);
+  const [page, setPage] = useState(1);
+  const [paginationData, setPaginationData] = useState([]);
+  const itemsPerPage = 5;
+
+  // Calculate the total number of pages
+  const totalPage = Math.ceil(classes.length / itemsPerPage);
+
   useEffect(() => {
     axiosFetch
-      .get("/users")
-      .then((res) => setUsers(res.data))
+      .get("/classes-manage")
+      .then((res) => setClasses(res.data))
       .catch((err) => console.log(err));
-  }, [])
-  const handleDelete = (id)=>{
+  }, []);
+
+  useEffect(() => {
+    let lastIndex = page * itemsPerPage;
+    const firstIndex = lastIndex - itemsPerPage;
+    if (lastIndex > classes.length) {
+      lastIndex = classes.length;
+    }
+    const currentData = classes.slice(firstIndex, lastIndex);
+    setPaginationData(currentData);
+  }, [page, classes]);
+
+  const handleApproved = (id) => {
     axiosSecure
-      .delete(`/delete-user/${id}`)
+      .put(`/change-status/${id}`, { status: "approved", reason: "" })
       .then((res) => {
-        if (res.data) {
-          toast.success("Đã xóa thành công");
-        }
+        const updatedClasses = classes.map((cls) =>
+          cls._id === id ? { ...cls, status: "approved" } : cls
+        );
+        setClasses(updatedClasses);
+        toast.success("Đã cập nhật thành công");
       })
-      .catch((err) => console.log(err));
-  }
+      .catch();
+  };
+
+  const handleDeny = (id) => {
+    axiosSecure
+      .put(`/change-status/${id}`, { status: "reject", reason: "" })
+      .then((res) => {
+        const updatedClasses = classes.map((cls) =>
+          cls._id === id ? { ...cls, status: "reject" } : cls
+        );
+        setClasses(updatedClasses);
+        toast.success("Đã cập nhật thành công");
+      })
+      .catch();
+  };
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPage) return;
+    setPage(newPage);
+  };
+
   return (
     <div className="text-4xl text-center font-bold text-secondary my-10">
-      Quản lý <span className="text-black">người dùng</span>
+      Quản lý <span className="text-black">khóa học</span>
       <div>
         <div className="flex flex-col">
           <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -40,13 +79,13 @@ const MangeUser = () => {
                         Hình ảnh
                       </th>
                       <th scope="col" className="px-4 py-6">
-                        Tên người dùng
+                        Tên khóa học
                       </th>
                       <th scope="col" className="px-4 py-6">
-                        Email đăng ký
+                        Tên giảng viên
                       </th>
                       <th scope="col" className="px-4 py-6">
-                        Phân quyền
+                        Trạng thái
                       </th>
                       <th scope="col" className="px-4 py-6">
                         Chi tiết
@@ -54,64 +93,65 @@ const MangeUser = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.length === 0 ? (
+                    {classes.length === 0 ? (
                       <tr>
                         <td
                           colSpan={5}
                           className="text-center text-2xl font-bold"
                         >
-                          Không tồn tại người dùng nào
+                          Không tồn tại khóa học nào
                         </td>
                       </tr>
                     ) : (
-                      users.map((cls, index) => (
+                      paginationData.map((cls, index) => (
                         <tr
                           key={index}
                           className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600"
                         >
                           <td className="whitespace-nowrap px-6 py-4">
                             <img
-                              src={cls.photoUrl}
+                              src={cls.image}
                               alt=""
-                              className="h-[35px] w-[35px] rounded-full object-cover "
+                              className="h-[35px] w-[35px] "
                             />
                           </td>
                           <td className="whitespace-nowrap px-6 py-4">
                             {cls.name}
                           </td>
                           <td className="whitespace-nowrap px-6 py-4">
-                            {cls.email}
+                            {cls.instructorName}
                           </td>
                           <td className="whitespace-nowrap px-6 py-4">
                             <span
                               className={`font-bold px-3 py-1 text-white uppercase rounded-2xl ${
-                                cls.role === "admin"
+                                cls.status === "pending"
                                   ? "bg-orange-500"
-                                  : cls.role === "user"
+                                  : cls.status === "checking"
                                   ? "bg-yellow-500"
-                                  : cls.role === "instructor"
+                                  : cls.status === "approved"
                                   ? "bg-green-500"
                                   : "bg-red-500"
                               }`}
                             >
-                              {cls.role}
+                              {cls.status}
                             </span>
                           </td>
                           <td className="whitespace-nowrap px-6 py-4">
                             <div className="flex gap-2">
                               <button
-                                onClick={() =>
-                                  navigate(`/dashboard/edit-user/${cls._id}`)
-                                }
+                                onClick={() => handleApproved(cls._id)}
                                 className="text-[12px] cursor-pointer font-bold hover:translate-x-1 duration-300 disabled:bg-green-700 bg-green-400 py-1 rounded-md px-2 text-white"
                               >
-                                Cập nhật
+                                Xác nhận
                               </button>
                               <button
-                                onClick={() => handleDelete(cls._id)}
+                                onClick={() => handleDeny(cls._id)}
                                 className="text-[12px] cursor-pointer font-bold hover:translate-x-1 duration-300 disabled:bg-red-700 bg-red-400 py-1 rounded-md px-2 text-white"
                               >
-                                Xóa
+                                Từ chối
+                              </button>
+                              <button className="text-[12px] cursor-pointer font-bold hover:translate-x-1 duration-300 disabled:bg-blue-700 bg-blue-400 py-1 rounded-md px-2 text-white">
+                                Gửi phản hồi
                               </button>
                             </div>
                           </td>
@@ -125,9 +165,36 @@ const MangeUser = () => {
           </div>
         </div>
         {/* Pagination controls */}
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={() => handlePageChange(page - 1)}
+            className="px-4 py-2 text-sm bg-gray-400 text-white rounded-md mx-1"
+            disabled={page === 1}
+          >
+            Previous
+          </button>
+          {[...Array(totalPage)].map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setPage(index + 1)}
+              className={`px-4 text-sm py-2 rounded-md mx-1 ${
+                page === index + 1 ? "bg-blue-500 text-white" : "bg-gray-300"
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => handlePageChange(page + 1)}
+            className="px-4 py-2 text-sm bg-gray-400 text-white rounded-md mx-1"
+            disabled={page === totalPage}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
-export default MangeUser;
+export default MangeClases;
